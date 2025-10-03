@@ -1,0 +1,334 @@
+/*
+ * Sweet - https://github.com/TheEntropyShard/Sweet
+ * Copyright (C) 2025 TheEntropyShard
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package me.theentropyshard.sweet.api;
+
+import com.google.gson.Gson;
+import me.theentropyshard.sweet.api.model.Message;
+import me.theentropyshard.sweet.api.model.event.*;
+import me.theentropyshard.sweet.api.model.event.client.ClientHeartbeatEvent;
+import me.theentropyshard.sweet.api.model.event.client.ClientIdentifyEvent;
+import me.theentropyshard.sweet.api.model.event.server.ServerMessageCreateEvent;
+import me.theentropyshard.sweet.api.model.event.server.ServerReadyEvent;
+import me.theentropyshard.sweet.api.model.http.LoginRequest;
+import me.theentropyshard.sweet.api.model.http.LoginResponse;
+import okhttp3.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class ShootClient extends WebSocketListener {
+    private static final Logger LOG = LogManager.getLogger(ShootClient.class);
+
+    private final OkHttpClient httpClient;
+    private final Gson gson;
+    private final Set<GatewayEventListener> listeners;
+
+    private String instance;
+    private String token;
+    private WebSocket webSocket;
+    private int clientSequence;
+
+    private boolean closeInitiated;
+
+    public ShootClient(OkHttpClient httpClient) {
+        this.httpClient = httpClient;
+        this.gson = new Gson();
+        this.listeners = new HashSet<>();
+    }
+
+    public void login(String username, String password, LoginCallback callback) {
+        RequestBody body = RequestBody.create(
+            this.gson.toJson(new LoginRequest(username, password)).getBytes(StandardCharsets.UTF_8),
+            MediaType.parse("application/json")
+        );
+
+        Request request = new Request.Builder()
+            .url(this.instance + "/auth/login")
+            .post(body)
+            .build();
+
+        this.httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                callback.onError();
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    LoginResponse r = ShootClient.this.gson.fromJson(response.body().string(), LoginResponse.class);
+                    ShootClient.this.token = r.getToken();
+                    createWebSocket();
+                    callback.onSuccess();
+                } else {
+                    callback.onError();
+                }
+            }
+        });
+    }
+
+    public Message[] getMessages(String channelMention) throws IOException {
+        Request request = new Request.Builder()
+            .header("Authorization", "Bearer " + this.token)
+            .url(this.instance + "/channel/" + channelMention + "/messages?limit=50&order=ASC")
+            .build();
+
+        try (Response response = this.httpClient.newCall(request).execute()) {
+            return this.gson.fromJson(response.body().string(), Message[].class);
+        }
+    }
+
+    public void sendMessage(String channelMention, String message) throws IOException {
+        message = message.replace("\n", "\\n");
+
+        RequestBody body = RequestBody.create(("{\"content\": \"" + message + "\"}").getBytes(StandardCharsets.UTF_8),
+            MediaType.parse("application/json"));
+
+        Request request = new Request.Builder()
+            .header("Authorization", "Bearer " + this.token)
+            .url(this.instance + "/channel/" + channelMention + "/messages")
+            .post(body)
+            .build();
+
+        try (Response response = this.httpClient.newCall(request).execute()) {
+
+        }
+    }
+
+    private void startHeartbeat() {
+        new Timer(true).schedule(
+            new TimerTask() {
+                @Override
+                public void run() {
+                    String json = ShootClient.this.gson.toJson(new ClientHeartbeatEvent(ShootClient.this.clientSequence));
+
+                    ShootClient.this.webSocket.send(json);
+                }
+            }, 0, 4500L
+        );
+    }
+
+    private void createWebSocket() {
+        String url;
+
+        if (this.instance.startsWith("http://")) {
+            url = this.instance.replace("http", "ws");
+        } else if (this.instance.startsWith("https://")) {
+            url = this.instance.replace("https", "wss");
+        } else {
+            throw new RuntimeException("Wrong instance url: $instance");
+        }
+
+        Request request = new Request.Builder()
+            .url(url)
+            .build();
+
+        this.webSocket = this.httpClient.newWebSocket(request, this);
+    }
+
+    public void closeWebSocket() {
+        if (this.webSocket != null) {
+            this.closeInitiated = true;
+
+            this.webSocket.close(1000, null);
+        }
+    }
+
+    @Override
+    public void onOpen(@NotNull WebSocket webSocket, @NotNull Response response) {
+        String json = this.gson.toJson(new ClientIdentifyEvent(this.token));
+
+        this.webSocket.send(json);
+    }
+
+    @Override
+    public void onClosing(@NotNull WebSocket webSocket, int code, @NotNull String reason) {
+        if (code == 1000) {
+            ShootClient.LOG.info("WebSocket was successfully closed");
+        } else {
+            ShootClient.LOG.info("WebSocket was closed with code {} because {}", code, reason);
+        }
+
+        if (this.closeInitiated) { // FIXME: This is bad
+            System.exit(0);
+        }
+    }
+
+    @Override
+    public void onMessage(@NotNull WebSocket webSocket, @NotNull String text) {
+        GatewayEvent event = this.gson.fromJson(text, GatewayEvent.class);
+
+        if (this.checkEvent(event)) {
+            return;
+        }
+
+        this.checkSequence(event.getServerSequence());
+
+        switch (event.getType()) {
+            case MESSAGE_CREATE -> {
+                ServerMessageCreateEvent messageCreateEvent = this.gson.fromJson(event.getData(), ServerMessageCreateEvent.class);
+
+                this.listeners.forEach(listener -> listener.onMessageCreate(messageCreateEvent));
+            }
+
+            case MESSAGE_UPDATE -> {
+
+            }
+
+            case MESSAGE_DELETE -> {
+
+            }
+
+            case CHANNEL_CREATE -> {
+
+            }
+
+            case CHANNEL_UPDATE -> {
+
+            }
+
+            case CHANNEL_DELETE -> {
+
+            }
+
+            case GUILD_CREATE -> {
+
+            }
+
+            case GUILD_UPDATE -> {
+
+            }
+
+            case GUILD_DELETE -> {
+
+            }
+
+            case ROLE_CREATE -> {
+
+            }
+
+            case ROLE_MEMBER_ADD -> {
+
+            }
+
+            case ROLE_MEMBER_LEAVE -> {
+
+            }
+
+            case MEMBERS_CHUNK -> {
+
+            }
+
+            case MEMBER_JOIN -> {
+
+            }
+
+            case MEMBER_LEAVE -> {
+
+            }
+
+            case RELATIONSHIP_CREATE -> {
+
+            }
+
+            case RELATIONSHIP_UPDATE -> {
+
+            }
+
+            case RELATIONSHIP_DELETE -> {
+
+            }
+
+            case INVITE_CREATE -> {
+
+            }
+
+            case MEDIA_TOKEN_RECEIVED -> {
+
+            }
+
+            case READY -> {
+                this.startHeartbeat();
+
+                ServerReadyEvent readyEvent = this.gson.fromJson(event.getData(), ServerReadyEvent.class);
+
+                this.listeners.forEach(listener -> listener.onReady(readyEvent));
+            }
+
+            case HEARTBEAT_ACK -> {
+
+            }
+
+            case SWEET_UNKNOWN -> {
+                ShootClient.LOG.warn("Unknown WebSocket event: {}", event.getRawType());
+            }
+        }
+    }
+
+    @Override
+    public void onFailure(@NotNull WebSocket webSocket, @NotNull Throwable t, @Nullable Response response) {
+        ShootClient.LOG.error("WebSocket connection failed", t);
+    }
+
+    private boolean checkEvent(GatewayEvent event) {
+        if (event.getRawType() == null) {
+            ShootClient.LOG.warn("Malformed WebSocket message: type field \"t\" is not present");
+
+            return true;
+        }
+
+        if (event.getData() == null) {
+            ShootClient.LOG.warn("Malformed WebSocket message: data field \"d\" is not present");
+
+            return true;
+        }
+
+        if (event.getServerSequence() == null) {
+            ShootClient.LOG.warn("Malformed WebSocket message: sequence field \"s\" is not present");
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private void checkSequence(int serverSequence) {
+        int clientSequence = this.clientSequence++;
+
+        if (serverSequence != clientSequence) {
+            throw new RuntimeException("Out of sync. Sequence mismatch: serverSequence = " + serverSequence + ", clientSequence = " + clientSequence);
+        }
+    }
+
+    public void addGatewayListener(GatewayEventListener listener) {
+        this.listeners.add(listener);
+    }
+
+    public void setInstance(String instance) {
+        this.instance = instance;
+    }
+}
