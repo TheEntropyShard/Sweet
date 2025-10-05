@@ -45,7 +45,7 @@ public interface GatewayEventListener {
 
     void onRoleMemberLeave(ServerRoleMemberLeaveEvent event);
 
-    void onMemberChunk(ServerMemberChunkEvent event);
+    void onMembersChunk(ServerMembersChunkEvent event);
 
     void onMemberJoin(ServerMemberJoinEvent event);
 

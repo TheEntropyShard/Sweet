@@ -207,7 +207,7 @@ public class MainViewController implements GatewayEventListener {
     }
 
     @Override
-    public void onMemberChunk(ServerMemberChunkEvent event) {
+    public void onMembersChunk(ServerMembersChunkEvent event) {
 
     }
 

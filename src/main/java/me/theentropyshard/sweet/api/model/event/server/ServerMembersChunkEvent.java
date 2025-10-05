@@ -18,5 +18,5 @@
 
 package me.theentropyshard.sweet.api.model.event.server;
 
-public class ServerMemberChunkEvent {
+public class ServerMembersChunkEvent {
 }
