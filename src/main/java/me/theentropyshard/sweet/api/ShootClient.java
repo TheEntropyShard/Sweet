@@ -91,7 +91,7 @@ public class ShootClient extends WebSocketListener {
                 if (response.isSuccessful()) {
                     LoginResponse r = ShootClient.this.gson.fromJson(response.body().string(), LoginResponse.class);
                     ShootClient.this.token = r.getToken();
-                    createWebSocket();
+                    ShootClient.this.createWebSocket();
                     callback.onSuccess();
                 } else {
                     callback.onError();
