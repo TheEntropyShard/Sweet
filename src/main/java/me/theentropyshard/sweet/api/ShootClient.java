@@ -19,15 +19,6 @@
 package me.theentropyshard.sweet.api;
 
 import com.google.gson.Gson;
-import me.theentropyshard.sweet.api.model.Message;
-import me.theentropyshard.sweet.api.model.event.*;
-import me.theentropyshard.sweet.api.model.event.client.ClientHeartbeatEvent;
-import me.theentropyshard.sweet.api.model.event.client.ClientIdentifyEvent;
-import me.theentropyshard.sweet.api.model.event.server.ServerMessageCreateEvent;
-import me.theentropyshard.sweet.api.model.event.server.ServerReadyEvent;
-import me.theentropyshard.sweet.api.model.http.LoginRequest;
-import me.theentropyshard.sweet.api.model.http.LoginResponse;
-
 import com.google.gson.GsonBuilder;
 import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
@@ -41,6 +32,16 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import me.theentropyshard.sweet.api.model.Message;
+import me.theentropyshard.sweet.api.model.event.GatewayEvent;
+import me.theentropyshard.sweet.api.model.event.client.ClientGatewayEvent;
+import me.theentropyshard.sweet.api.model.event.client.ClientHeartbeatEvent;
+import me.theentropyshard.sweet.api.model.event.client.ClientIdentifyEvent;
+import me.theentropyshard.sweet.api.model.event.server.ServerMessageCreateEvent;
+import me.theentropyshard.sweet.api.model.event.server.ServerReadyEvent;
+import me.theentropyshard.sweet.api.model.http.LoginRequest;
+import me.theentropyshard.sweet.api.model.http.LoginResponse;
 
 public class ShootClient extends WebSocketListener {
     private static final Logger LOG = LogManager.getLogger(ShootClient.class);
@@ -60,6 +61,12 @@ public class ShootClient extends WebSocketListener {
         this.httpClient = httpClient;
         this.gson = new GsonBuilder().disableHtmlEscaping().disableJdkUnsafe().create();
         this.listeners = new HashSet<>();
+    }
+
+    private void send(ClientGatewayEvent event) {
+        String json = ShootClient.this.gson.toJson(event);
+
+        ShootClient.this.webSocket.send(json);
     }
 
     public void login(String username, String password, LoginCallback callback) {
@@ -126,9 +133,7 @@ public class ShootClient extends WebSocketListener {
             new TimerTask() {
                 @Override
                 public void run() {
-                    String json = ShootClient.this.gson.toJson(new ClientHeartbeatEvent(ShootClient.this.clientSequence));
-
-                    ShootClient.this.webSocket.send(json);
+                    ShootClient.this.send(new ClientHeartbeatEvent(ShootClient.this.clientSequence));
                 }
             }, 0, 4500L
         );
@@ -162,9 +167,7 @@ public class ShootClient extends WebSocketListener {
 
     @Override
     public void onOpen(@NotNull WebSocket webSocket, @NotNull Response response) {
-        String json = this.gson.toJson(new ClientIdentifyEvent(this.token));
-
-        this.webSocket.send(json);
+        this.send(new ClientIdentifyEvent(this.token));
     }
 
     @Override

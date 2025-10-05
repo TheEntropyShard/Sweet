@@ -18,12 +18,6 @@
 
 package me.theentropyshard.sweet.api.model.event.client;
 
-public class ClientHeartbeatEvent implements ClientGatewayEvent {
-    private final String t = "heartbeat";
+public interface ClientGatewayEvent {
 
-    private final int s;
-
-    public ClientHeartbeatEvent(int s) {
-        this.s = s;
-    }
 }

@@ -18,7 +18,7 @@
 
 package me.theentropyshard.sweet.api.model.event.client;
 
-public class ClientIdentifyEvent {
+public class ClientIdentifyEvent implements ClientGatewayEvent {
     private final String t = "identify";
 
     private final String token;
