@@ -27,6 +27,8 @@ import me.theentropyshard.sweet.api.model.event.server.ServerMessageCreateEvent;
 import me.theentropyshard.sweet.api.model.event.server.ServerReadyEvent;
 import me.theentropyshard.sweet.api.model.http.LoginRequest;
 import me.theentropyshard.sweet.api.model.http.LoginResponse;
+
+import com.google.gson.GsonBuilder;
 import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,7 +58,7 @@ public class ShootClient extends WebSocketListener {
 
     public ShootClient(OkHttpClient httpClient) {
         this.httpClient = httpClient;
-        this.gson = new Gson();
+        this.gson = new GsonBuilder().disableHtmlEscaping().disableJdkUnsafe().create();
         this.listeners = new HashSet<>();
     }
 
