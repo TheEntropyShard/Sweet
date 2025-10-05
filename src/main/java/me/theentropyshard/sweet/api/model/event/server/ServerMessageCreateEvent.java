@@ -23,8 +23,8 @@ import me.theentropyshard.sweet.api.model.Message;
 public class ServerMessageCreateEvent {
     private Message message;
 
-    public ServerMessageCreateEvent(Message message) {
-        this.message = message;
+    public ServerMessageCreateEvent() {
+
     }
 
     public Message getMessage() {
