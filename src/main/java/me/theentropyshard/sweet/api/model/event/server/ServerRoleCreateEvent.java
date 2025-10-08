@@ -18,5 +18,16 @@
 
 package me.theentropyshard.sweet.api.model.event.server;
 
+import me.theentropyshard.sweet.api.model.Role;
+
 public class ServerRoleCreateEvent {
+    private Role role;
+
+    public ServerRoleCreateEvent() {
+
+    }
+
+    public Role getRole() {
+        return this.role;
+    }
 }
