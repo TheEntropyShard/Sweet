@@ -232,7 +232,9 @@ public class ShootClient extends WebSocketListener {
             }
 
             case GUILD_CREATE -> {
+                ServerGuildCreateEvent guildCreateEvent = this.gson.fromJson(event.getData(), ServerGuildCreateEvent.class);
 
+                this.listeners.forEach(listener -> listener.onGuildCreate(guildCreateEvent));
             }
 
             case GUILD_UPDATE -> {
