@@ -18,5 +18,24 @@
 
 package me.theentropyshard.sweet.api.model.event.server;
 
+import com.google.gson.annotations.SerializedName;
+
 public class ServerMemberLeaveEvent {
+    @SerializedName("guild")
+    private String guildMention;
+
+    @SerializedName("user")
+    private String userMention;
+
+    public ServerMemberLeaveEvent() {
+
+    }
+
+    public String getGuildMention() {
+        return this.guildMention;
+    }
+
+    public String getUserMention() {
+        return this.userMention;
+    }
 }

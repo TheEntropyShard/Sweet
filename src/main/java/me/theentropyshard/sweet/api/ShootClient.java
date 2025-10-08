@@ -299,7 +299,9 @@ public class ShootClient extends WebSocketListener {
             }
 
             case MEMBER_LEAVE -> {
+                ServerMemberLeaveEvent memberLeaveEvent = this.gson.fromJson(event.getData(), ServerMemberLeaveEvent.class);
 
+                this.listeners.forEach(listener -> listener.onMemberLeave(memberLeaveEvent));
             }
 
             case RELATIONSHIP_CREATE -> {
