@@ -18,5 +18,16 @@
 
 package me.theentropyshard.sweet.api.model.event.server;
 
+import me.theentropyshard.sweet.api.model.Channel;
+
 public class ServerChannelUpdateEvent {
+    private Channel channel;
+
+    public ServerChannelUpdateEvent() {
+
+    }
+
+    public Channel getChannel() {
+        return this.channel;
+    }
 }

@@ -220,7 +220,9 @@ public class ShootClient extends WebSocketListener {
             }
 
             case CHANNEL_UPDATE -> {
+                ServerChannelUpdateEvent channelUpdateEvent = this.gson.fromJson(event.getData(), ServerChannelUpdateEvent.class);
 
+                this.listeners.forEach(listener -> listener.onChannelUpdate(channelUpdateEvent));
             }
 
             case CHANNEL_DELETE -> {
