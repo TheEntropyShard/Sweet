@@ -256,7 +256,9 @@ public class ShootClient extends WebSocketListener {
             }
 
             case ROLE_MEMBER_ADD -> {
+                ServerRoleMemberAddEvent roleMemberAddEvent = this.gson.fromJson(event.getData(), ServerRoleMemberAddEvent.class);
 
+                this.listeners.forEach(listener -> listener.onRoleMemberAdd(roleMemberAddEvent));
             }
 
             case ROLE_MEMBER_LEAVE -> {

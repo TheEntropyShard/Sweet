@@ -18,5 +18,28 @@
 
 package me.theentropyshard.sweet.api.model.event.server;
 
+import com.google.gson.annotations.SerializedName;
+import me.theentropyshard.sweet.api.model.Member;
+
 public class ServerRoleMemberAddEvent {
+    @SerializedName("role_id")
+    private String roleId;
+    private String guildMention;
+    private Member member;
+
+    public ServerRoleMemberAddEvent() {
+
+    }
+
+    public String getRoleId() {
+        return this.roleId;
+    }
+
+    public String getGuildMention() {
+        return this.guildMention;
+    }
+
+    public Member getMember() {
+        return this.member;
+    }
 }
