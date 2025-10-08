@@ -19,4 +19,18 @@
 package me.theentropyshard.sweet.api.model.event.server;
 
 public class ServerMediaTokenReceivedEvent {
+    private String token;
+    private String endpoint;
+
+    public ServerMediaTokenReceivedEvent() {
+
+    }
+
+    public String getToken() {
+        return this.token;
+    }
+
+    public String getEndpoint() {
+        return this.endpoint;
+    }
 }

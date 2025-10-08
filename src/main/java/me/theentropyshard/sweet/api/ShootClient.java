@@ -317,7 +317,9 @@ public class ShootClient extends WebSocketListener {
             }
 
             case MEDIA_TOKEN_RECEIVED -> {
+                ServerMediaTokenReceivedEvent mediaTokenReceivedEvent = this.gson.fromJson(event.getData(), ServerMediaTokenReceivedEvent.class);
 
+                this.listeners.forEach(listener -> listener.onMediaTokenReceived(mediaTokenReceivedEvent));
             }
 
             case READY -> {
