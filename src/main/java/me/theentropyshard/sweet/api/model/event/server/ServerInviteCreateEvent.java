@@ -18,5 +18,26 @@
 
 package me.theentropyshard.sweet.api.model.event.server;
 
+import me.theentropyshard.sweet.api.model.Guild;
+
 public class ServerInviteCreateEvent {
+    private String code;
+    private String expires;
+    private Guild guild;
+
+    public ServerInviteCreateEvent() {
+
+    }
+
+    public String getCode() {
+        return this.code;
+    }
+
+    public String getExpires() {
+        return this.expires;
+    }
+
+    public Guild getGuild() {
+        return this.guild;
+    }
 }

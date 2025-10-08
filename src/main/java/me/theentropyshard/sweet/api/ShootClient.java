@@ -313,7 +313,9 @@ public class ShootClient extends WebSocketListener {
             }
 
             case INVITE_CREATE -> {
+                ServerInviteCreateEvent inviteCreateEvent = this.gson.fromJson(event.getData(), ServerInviteCreateEvent.class);
 
+                this.listeners.forEach(listener -> listener.onInviteCreate(inviteCreateEvent));
             }
 
             case MEDIA_TOKEN_RECEIVED -> {
