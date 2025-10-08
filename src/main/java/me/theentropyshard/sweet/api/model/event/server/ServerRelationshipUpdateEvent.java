@@ -18,5 +18,16 @@
 
 package me.theentropyshard.sweet.api.model.event.server;
 
+import me.theentropyshard.sweet.api.model.Relationship;
+
 public class ServerRelationshipUpdateEvent {
+    private Relationship relationship;
+
+    public ServerRelationshipUpdateEvent() {
+
+    }
+
+    public Relationship getRelationship() {
+        return this.relationship;
+    }
 }

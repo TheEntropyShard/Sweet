@@ -311,7 +311,9 @@ public class ShootClient extends WebSocketListener {
             }
 
             case RELATIONSHIP_UPDATE -> {
+                ServerRelationshipUpdateEvent relationshipUpdateEvent = this.gson.fromJson(event.getData(), ServerRelationshipUpdateEvent.class);
 
+                this.listeners.forEach(listener -> listener.onRelationshipUpdate(relationshipUpdateEvent));
             }
 
             case RELATIONSHIP_DELETE -> {
