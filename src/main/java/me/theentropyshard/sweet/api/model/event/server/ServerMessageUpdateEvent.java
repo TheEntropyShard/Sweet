@@ -18,5 +18,16 @@
 
 package me.theentropyshard.sweet.api.model.event.server;
 
+import me.theentropyshard.sweet.api.model.Message;
+
 public class ServerMessageUpdateEvent {
+    private Message message;
+
+    public ServerMessageUpdateEvent() {
+
+    }
+
+    public Message getMessage() {
+        return this.message;
+    }
 }

@@ -22,6 +22,7 @@ import com.google.gson.*;
 import me.theentropyshard.sweet.api.model.ChatMember;
 import me.theentropyshard.sweet.api.model.event.client.ClientSubscribeForMembersEvent;
 import me.theentropyshard.sweet.api.model.event.server.ServerMembersChunkEvent;
+import me.theentropyshard.sweet.api.model.event.server.ServerMessageUpdateEvent;
 import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -204,7 +205,9 @@ public class ShootClient extends WebSocketListener {
             }
 
             case MESSAGE_UPDATE -> {
+                ServerMessageUpdateEvent messageUpdateEvent = this.gson.fromJson(event.getData(), ServerMessageUpdateEvent.class);
 
+                this.listeners.forEach(listener -> listener.onMessageUpdate(messageUpdateEvent));
             }
 
             case MESSAGE_DELETE -> {
