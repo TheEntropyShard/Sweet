@@ -18,5 +18,24 @@
 
 package me.theentropyshard.sweet.api.model.event.server;
 
+import com.google.gson.annotations.SerializedName;
+
 public class ServerMessageDeleteEvent {
+    @SerializedName("message_id")
+    private String messageId;
+
+    @SerializedName("channel")
+    private String channelMention;
+
+    public ServerMessageDeleteEvent() {
+
+    }
+
+    public String getMessageId() {
+        return this.messageId;
+    }
+
+    public String getChannelMention() {
+        return this.channelMention;
+    }
 }

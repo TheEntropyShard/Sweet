@@ -21,8 +21,7 @@ package me.theentropyshard.sweet.api;
 import com.google.gson.*;
 import me.theentropyshard.sweet.api.model.ChatMember;
 import me.theentropyshard.sweet.api.model.event.client.ClientSubscribeForMembersEvent;
-import me.theentropyshard.sweet.api.model.event.server.ServerMembersChunkEvent;
-import me.theentropyshard.sweet.api.model.event.server.ServerMessageUpdateEvent;
+import me.theentropyshard.sweet.api.model.event.server.*;
 import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,8 +37,6 @@ import me.theentropyshard.sweet.api.model.event.GatewayEvent;
 import me.theentropyshard.sweet.api.model.event.client.ClientGatewayEvent;
 import me.theentropyshard.sweet.api.model.event.client.ClientHeartbeatEvent;
 import me.theentropyshard.sweet.api.model.event.client.ClientIdentifyEvent;
-import me.theentropyshard.sweet.api.model.event.server.ServerMessageCreateEvent;
-import me.theentropyshard.sweet.api.model.event.server.ServerReadyEvent;
 import me.theentropyshard.sweet.api.model.http.LoginRequest;
 import me.theentropyshard.sweet.api.model.http.LoginResponse;
 
@@ -211,7 +208,9 @@ public class ShootClient extends WebSocketListener {
             }
 
             case MESSAGE_DELETE -> {
+                ServerMessageDeleteEvent messageDeleteEvent = this.gson.fromJson(event.getData(), ServerMessageDeleteEvent.class);
 
+                this.listeners.forEach(listener -> listener.onMessageDelete(messageDeleteEvent));
             }
 
             case CHANNEL_CREATE -> {
