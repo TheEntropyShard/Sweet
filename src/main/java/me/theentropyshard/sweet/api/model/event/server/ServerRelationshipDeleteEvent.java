@@ -18,5 +18,17 @@
 
 package me.theentropyshard.sweet.api.model.event.server;
 
+import com.google.gson.annotations.SerializedName;
+
 public class ServerRelationshipDeleteEvent {
+    @SerializedName("user")
+    private String userMention;
+
+    public ServerRelationshipDeleteEvent() {
+
+    }
+
+    public String getUserMention() {
+        return this.userMention;
+    }
 }

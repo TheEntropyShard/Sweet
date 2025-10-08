@@ -317,7 +317,9 @@ public class ShootClient extends WebSocketListener {
             }
 
             case RELATIONSHIP_DELETE -> {
+                ServerRelationshipDeleteEvent relationshipDeleteEvent = this.gson.fromJson(event.getData(), ServerRelationshipDeleteEvent.class);
 
+                this.listeners.forEach(listener -> listener.onRelationshipDelete(relationshipDeleteEvent));
             }
 
             case INVITE_CREATE -> {
