@@ -244,7 +244,9 @@ public class ShootClient extends WebSocketListener {
             }
 
             case GUILD_DELETE -> {
+                ServerGuildDeleteEvent guildDeleteEvent = this.gson.fromJson(event.getData(), ServerGuildDeleteEvent.class);
 
+                this.listeners.forEach(listener -> listener.onGuildDelete(guildDeleteEvent));
             }
 
             case ROLE_CREATE -> {

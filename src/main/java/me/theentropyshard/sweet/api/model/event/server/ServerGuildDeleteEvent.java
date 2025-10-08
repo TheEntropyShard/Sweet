@@ -18,5 +18,17 @@
 
 package me.theentropyshard.sweet.api.model.event.server;
 
+import com.google.gson.annotations.SerializedName;
+
 public class ServerGuildDeleteEvent {
+    @SerializedName("guild")
+    private String guildMention;
+
+    public ServerGuildDeleteEvent() {
+
+    }
+
+    public String getGuildMention() {
+        return this.guildMention;
+    }
 }
