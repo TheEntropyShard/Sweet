@@ -128,6 +128,8 @@ public class MainViewController implements GatewayEventListener {
 
                     SwingUtilities.invokeLater(chatView::scrollDown);
                 });
+
+                Sweet.getInstance().getShootClient().subscribeForMembers(channel.getMention());
             } catch (IOException e) {
                 e.printStackTrace();
             }

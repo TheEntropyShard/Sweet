@@ -18,8 +18,10 @@
 
 package me.theentropyshard.sweet.api;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
+import me.theentropyshard.sweet.api.model.ChatMember;
+import me.theentropyshard.sweet.api.model.event.client.ClientSubscribeForMembersEvent;
+import me.theentropyshard.sweet.api.model.event.server.ServerMembersChunkEvent;
 import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,10 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import me.theentropyshard.sweet.api.model.Message;
 import me.theentropyshard.sweet.api.model.event.GatewayEvent;
@@ -126,6 +125,10 @@ public class ShootClient extends WebSocketListener {
         try (Response response = this.httpClient.newCall(request).execute()) {
 
         }
+    }
+
+    public void subscribeForMembers(String channelMention) throws IOException {
+        this.send(new ClientSubscribeForMembersEvent(channelMention, 0, 100));
     }
 
     private void startHeartbeat() {
@@ -245,7 +248,34 @@ public class ShootClient extends WebSocketListener {
             }
 
             case MEMBERS_CHUNK -> {
+                List<ChatMember> members = new ArrayList<>();
 
+                String currentRoleId = "";
+
+                for (JsonElement item : event.getData().getAsJsonArray("items")) {
+                    if (item.isJsonPrimitive()) {
+                        currentRoleId = item.getAsString();
+                    } else if (item.isJsonObject()) {
+                        JsonObject object = item.getAsJsonObject();
+
+                        JsonElement userId = object.get("user_id");
+                        JsonElement memberId = object.get("member_id");
+                        JsonElement name = object.get("name");
+
+                        ChatMember member = new ChatMember(
+                            currentRoleId,
+                            userId.getAsString(),
+                            memberId == null ? null : memberId.getAsString(),
+                            name.getAsString()
+                        );
+
+                        members.add(member);
+                    }
+                }
+
+                ServerMembersChunkEvent membersChunkEvent = new ServerMembersChunkEvent(members);
+
+                this.listeners.forEach(listener -> listener.onMembersChunk(membersChunkEvent));
             }
 
             case MEMBER_JOIN -> {

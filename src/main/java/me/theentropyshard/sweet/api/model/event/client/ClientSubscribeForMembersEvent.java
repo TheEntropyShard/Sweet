@@ -16,20 +16,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.theentropyshard.sweet.api.model.event.server;
+package me.theentropyshard.sweet.api.model.event.client;
 
-import me.theentropyshard.sweet.api.model.ChatMember;
+public class ClientSubscribeForMembersEvent implements ClientGatewayEvent {
+    private final String t = "members";
 
-import java.util.List;
+    private final String channel_id;
+    private final int[] range;
 
-public class ServerMembersChunkEvent {
-    private final List<ChatMember> members;
-
-    public ServerMembersChunkEvent(List<ChatMember> members) {
-        this.members = members;
-    }
-
-    public List<ChatMember> getMembers() {
-        return this.members;
+    public ClientSubscribeForMembersEvent(String channelId, int min, int max) {
+        this.channel_id = channelId;
+        this.range = new int[]{min, max};
     }
 }

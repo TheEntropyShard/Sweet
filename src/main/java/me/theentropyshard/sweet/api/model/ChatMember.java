@@ -16,20 +16,34 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.theentropyshard.sweet.api.model.event.server;
+package me.theentropyshard.sweet.api.model;
 
-import me.theentropyshard.sweet.api.model.ChatMember;
+public class ChatMember {
+    private String roleId;
+    private String userId;
+    private String memberId;
+    private String name;
 
-import java.util.List;
-
-public class ServerMembersChunkEvent {
-    private final List<ChatMember> members;
-
-    public ServerMembersChunkEvent(List<ChatMember> members) {
-        this.members = members;
+    public ChatMember(String roleId, String userId, String memberId, String name) {
+        this.roleId = roleId;
+        this.userId = userId;
+        this.memberId = memberId;
+        this.name = name;
     }
 
-    public List<ChatMember> getMembers() {
-        return this.members;
+    public String getRoleId() {
+        return this.roleId;
+    }
+
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public String getMemberId() {
+        return this.memberId;
+    }
+
+    public String getName() {
+        return this.name;
     }
 }
