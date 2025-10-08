@@ -18,5 +18,16 @@
 
 package me.theentropyshard.sweet.api.model.event.server;
 
+import me.theentropyshard.sweet.api.model.Member;
+
 public class ServerMemberJoinEvent {
+    private Member member;
+
+    public ServerMemberJoinEvent() {
+
+    }
+
+    public Member getMember() {
+        return this.member;
+    }
 }

@@ -293,7 +293,9 @@ public class ShootClient extends WebSocketListener {
             }
 
             case MEMBER_JOIN -> {
+                ServerMemberJoinEvent memberJoinEvent = this.gson.fromJson(event.getData(), ServerMemberJoinEvent.class);
 
+                this.listeners.forEach(listener -> listener.onMemberJoin(memberJoinEvent));
             }
 
             case MEMBER_LEAVE -> {
