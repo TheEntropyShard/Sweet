@@ -238,7 +238,9 @@ public class ShootClient extends WebSocketListener {
             }
 
             case GUILD_UPDATE -> {
+                ServerGuildUpdateEvent guildUpdateEvent = this.gson.fromJson(event.getData(), ServerGuildUpdateEvent.class);
 
+                this.listeners.forEach(listener -> listener.onGuildUpdate(guildUpdateEvent));
             }
 
             case GUILD_DELETE -> {

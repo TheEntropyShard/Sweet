@@ -18,5 +18,16 @@
 
 package me.theentropyshard.sweet.api.model.event.server;
 
+import me.theentropyshard.sweet.api.model.Guild;
+
 public class ServerGuildUpdateEvent {
+    private Guild guild;
+
+    public ServerGuildUpdateEvent() {
+
+    }
+
+    public Guild getGuild() {
+        return this.guild;
+    }
 }
