@@ -214,7 +214,9 @@ public class ShootClient extends WebSocketListener {
             }
 
             case CHANNEL_CREATE -> {
+                ServerChannelCreateEvent channelCreateEvent = this.gson.fromJson(event.getData(), ServerChannelCreateEvent.class);
 
+                this.listeners.forEach(listener -> listener.onChannelCreate(channelCreateEvent));
             }
 
             case CHANNEL_UPDATE -> {
