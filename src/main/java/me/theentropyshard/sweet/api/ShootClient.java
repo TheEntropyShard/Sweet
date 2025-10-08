@@ -226,7 +226,9 @@ public class ShootClient extends WebSocketListener {
             }
 
             case CHANNEL_DELETE -> {
+                ServerChannelDeleteEvent channelDeleteEvent = this.gson.fromJson(event.getData(), ServerChannelDeleteEvent.class);
 
+                this.listeners.forEach(listener -> listener.onChannelDelete(channelDeleteEvent));
             }
 
             case GUILD_CREATE -> {

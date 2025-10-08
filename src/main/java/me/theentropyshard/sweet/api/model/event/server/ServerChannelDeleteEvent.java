@@ -19,4 +19,22 @@
 package me.theentropyshard.sweet.api.model.event.server;
 
 public class ServerChannelDeleteEvent {
+    private String channelMention;
+    private String guildMention;
+
+    public ServerChannelDeleteEvent() {
+
+    }
+
+    public boolean isPrivate() {
+        return this.guildMention == null;
+    }
+
+    public String getChannelMention() {
+        return this.channelMention;
+    }
+
+    public String getGuildMention() {
+        return this.guildMention;
+    }
 }
