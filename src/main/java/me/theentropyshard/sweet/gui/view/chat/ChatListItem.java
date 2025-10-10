@@ -91,8 +91,8 @@ public class ChatListItem extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        Area backgroundArea = new Area(new Rectangle(0, 0, this.getWidth(), this.getHeight()));
-        backgroundArea.intersect(new Area(new RoundRectangle2D.Double(0, 0, this.getWidth(), this.getHeight(), 16, 16)));
+        Area backgroundArea = new Area(new Rectangle(0, 0, this.getWidth() - 1, this.getHeight() - 1));
+        backgroundArea.intersect(new Area(new RoundRectangle2D.Double(0, 0, this.getWidth() - 1, this.getHeight() - 1, 16, 16)));
 
         g.setColor(this.getBackground());
         g2d.fill(backgroundArea);
@@ -103,7 +103,7 @@ public class ChatListItem extends JPanel {
             g2d.setColor(new Color(0, 0, 0, 200));
 
             Area rippleArea = new Area(new RoundRectangle2D.Double(this.rippleX - this.rippleRadius, this.rippleY - this.rippleRadius, this.rippleRadius * 2, this.rippleRadius * 2, 16, 16));
-            rippleArea.intersect(new Area(new RoundRectangle2D.Double(0, 0, this.getWidth(), this.getHeight(), 16, 16)));
+            rippleArea.intersect(new Area(new RoundRectangle2D.Double(0, 0, this.getWidth() - 1, this.getHeight() - 1, 16, 16)));
 
             g2d.fill(rippleArea);
             g2d.setComposite(composite);
