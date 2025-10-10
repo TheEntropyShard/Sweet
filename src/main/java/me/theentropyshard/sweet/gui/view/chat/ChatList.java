@@ -35,7 +35,7 @@ public class ChatList extends JPanel {
         this.items = new HashMap<>();
 
         this.chatsPanel = new JPanel();
-        this.chatsPanel.setLayout(new MigLayout("fillx, flowy"));
+        this.chatsPanel.setLayout(new MigLayout("insets n 0 0 0, fillx, flowy"));
 
         this.setLayout(new BorderLayout());
 
