@@ -90,6 +90,8 @@ public class MainViewController implements GatewayEventListener {
     }
 
     public void showPrivate() {
+        SwingUtilities.invokeLater(() -> this.mainView.getChatListHeader().setName("Private Channels"));
+
         this.updateChatList(this.privateChannels);
     }
 
@@ -99,6 +101,8 @@ public class MainViewController implements GatewayEventListener {
         if (guild == null) {
             return;
         }
+
+        SwingUtilities.invokeLater(() -> this.mainView.getChatListHeader().setName(guild.getName()));
 
         this.updateChatList(guild.getChannels());
     }

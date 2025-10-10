@@ -20,6 +20,7 @@ package me.theentropyshard.sweet.gui.view;
 
 import me.theentropyshard.sweet.gui.Gui;
 import me.theentropyshard.sweet.gui.view.chat.ChatList;
+import me.theentropyshard.sweet.gui.view.chat.ChatListHeader;
 import me.theentropyshard.sweet.gui.view.chat.ChatView;
 import me.theentropyshard.sweet.gui.view.guild.GuildList;
 
@@ -31,6 +32,7 @@ public class MainView extends JPanel {
 
     private final GuildList guildList;
     private final JPanel centerPanel;
+    private final ChatListHeader chatListHeader;
     private final ChatList chatList;
     private final ChatView chatView;
 
@@ -46,8 +48,14 @@ public class MainView extends JPanel {
 
         this.centerPanel = new JPanel(new BorderLayout());
 
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        this.centerPanel.add(leftPanel, BorderLayout.WEST);
+
+        this.chatListHeader = new ChatListHeader();
+        leftPanel.add(this.chatListHeader, BorderLayout.NORTH);
+
         this.chatList = new ChatList();
-        this.centerPanel.add(this.chatList, BorderLayout.WEST);
+        leftPanel.add(this.chatList, BorderLayout.CENTER);
 
         this.chatView = new ChatView();
         this.centerPanel.add(this.chatView, BorderLayout.CENTER);
@@ -67,6 +75,10 @@ public class MainView extends JPanel {
 
     public GuildList getGuildList() {
         return this.guildList;
+    }
+
+    public ChatListHeader getChatListHeader() {
+        return this.chatListHeader;
     }
 
     public ChatList getChatList() {
