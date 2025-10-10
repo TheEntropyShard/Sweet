@@ -116,7 +116,7 @@ public class ChatListItem extends JPanel {
         return this.rawName;
     }
 
-    public void setName(String name) {
+    public void setChannelName(String name) {
         this.rawName = name;
 
         this.nameLabel.setText("<html><b># " + name + "</b></html>");

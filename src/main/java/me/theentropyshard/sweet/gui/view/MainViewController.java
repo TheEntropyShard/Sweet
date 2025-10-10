@@ -81,7 +81,7 @@ public class MainViewController implements GatewayEventListener {
             chatList.removeAll();
             for (Channel channel : channels) {
                 ChatListItem item = new ChatListItem(() -> this.showChannel(channel));
-                item.setName(channel.getName());
+                item.setChannelName(channel.getName());
                 chatList.addChat(item);
             }
             chatList.repaint();
