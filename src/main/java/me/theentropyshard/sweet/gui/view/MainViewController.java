@@ -119,7 +119,9 @@ public class MainViewController implements GatewayEventListener {
 
                     chatView.removeAllMessages();
 
-                    for (Message message : messages) {
+                    for (int i = messages.length - 1; i >= 0; i--) {
+                        Message message = messages[i];
+
                         chatView.addMessage(new MessageComponent(
                             message.getAuthorId(),
                             OffsetDateTime.parse(message.getPublished())

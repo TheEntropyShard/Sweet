@@ -100,7 +100,7 @@ public class ShootClient extends WebSocketListener {
     public Message[] getMessages(String channelMention) throws IOException {
         Request request = new Request.Builder()
             .header("Authorization", "Bearer " + this.token)
-            .url(this.instance + "/channel/" + channelMention + "/messages?limit=50&order=ASC")
+            .url(this.instance + "/channel/" + channelMention + "/messages?limit=50&before=")
             .build();
 
         try (Response response = this.httpClient.newCall(request).execute()) {
@@ -121,7 +121,9 @@ public class ShootClient extends WebSocketListener {
             .build();
 
         try (Response response = this.httpClient.newCall(request).execute()) {
-
+            if (!response.isSuccessful()) {
+                ShootClient.LOG.warn("Could not send message. Code: {}", response.code());
+            }
         }
     }
 
