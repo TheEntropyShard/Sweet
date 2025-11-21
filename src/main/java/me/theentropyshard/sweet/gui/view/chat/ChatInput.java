@@ -32,7 +32,7 @@ public class ChatInput extends JPanel {
     private Listener listener;
 
     public ChatInput() {
-        MigLayout layout = new MigLayout("", "[fill][][]", "[bottom, grow]");
+        MigLayout layout = new MigLayout("", "[fill][]", "[bottom, grow]");
         this.setLayout(layout);
 
         this.setForeground(UIManager.getColor("onSecondaryContainer"));
