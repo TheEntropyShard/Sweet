@@ -39,6 +39,7 @@ import me.theentropyshard.sweet.api.model.event.client.ClientHeartbeatEvent;
 import me.theentropyshard.sweet.api.model.event.client.ClientIdentifyEvent;
 import me.theentropyshard.sweet.api.model.http.LoginRequest;
 import me.theentropyshard.sweet.api.model.http.LoginResponse;
+import me.theentropyshard.sweet.api.model.http.SendMessageRequest;
 
 public class ShootClient extends WebSocketListener {
     private static final Logger LOG = LogManager.getLogger(ShootClient.class);
@@ -46,6 +47,7 @@ public class ShootClient extends WebSocketListener {
     private final OkHttpClient httpClient;
     private final Gson gson;
     private final Set<GatewayEventListener> listeners;
+    private final SendMessageRequest sendMessageRequest;
 
     private String instance;
     private String token;
@@ -58,6 +60,7 @@ public class ShootClient extends WebSocketListener {
         this.httpClient = httpClient;
         this.gson = new GsonBuilder().disableHtmlEscaping().disableJdkUnsafe().create();
         this.listeners = new HashSet<>();
+        this.sendMessageRequest = new SendMessageRequest();
     }
 
     private void send(ClientGatewayEvent event) {
@@ -109,9 +112,9 @@ public class ShootClient extends WebSocketListener {
     }
 
     public void sendMessage(String channelMention, String message) throws IOException {
-        message = message.replace("\n", "\\n");
+        this.sendMessageRequest.setContent(message);
 
-        RequestBody body = RequestBody.create(("{\"content\": \"" + message + "\"}").getBytes(StandardCharsets.UTF_8),
+        RequestBody body = RequestBody.create((this.gson.toJson(this.sendMessageRequest)).getBytes(StandardCharsets.UTF_8),
             MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
