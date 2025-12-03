@@ -20,10 +20,7 @@ package me.theentropyshard.sweet.gui.view;
 
 import me.theentropyshard.sweet.Sweet;
 import me.theentropyshard.sweet.api.GatewayEventListener;
-import me.theentropyshard.sweet.api.model.Channel;
-import me.theentropyshard.sweet.api.model.Guild;
-import me.theentropyshard.sweet.api.model.Message;
-import me.theentropyshard.sweet.api.model.Relationship;
+import me.theentropyshard.sweet.api.model.*;
 import me.theentropyshard.sweet.api.model.event.server.*;
 import me.theentropyshard.sweet.gui.view.chat.ChatList;
 import me.theentropyshard.sweet.gui.view.chat.ChatListItem;
@@ -50,6 +47,8 @@ public class MainViewController implements GatewayEventListener {
     private final List<Guild> guilds;
     private final List<Channel> privateChannels;
     private final List<Relationship> relationships;
+
+    private User user;
 
     private Channel currentChannel;
 
@@ -127,7 +126,7 @@ public class MainViewController implements GatewayEventListener {
                             OffsetDateTime.parse(message.getPublished())
                                 .atZoneSameInstant(ZoneId.systemDefault()).format(MainViewController.FORMATTER),
                             message.getContent()
-                        ));
+                        ), message.getAuthorId().equals(this.user.getMention()));
                     }
 
                     chatView.revalidate();
@@ -147,12 +146,14 @@ public class MainViewController implements GatewayEventListener {
         SwingUtilities.invokeLater(() -> {
             ChatView chatView = this.mainView.getChatView();
 
+            Message message = event.getMessage();
+
             chatView.addMessage(new MessageComponent(
-                event.getMessage().getAuthorId(),
-                OffsetDateTime.parse(event.getMessage().getPublished())
+                message.getAuthorId(),
+                OffsetDateTime.parse(message.getPublished())
                     .atZoneSameInstant(ZoneId.systemDefault()).format(MainViewController.FORMATTER),
-                event.getMessage().getContent()
-            ));
+                message.getContent()
+            ), message.getAuthorId().equals(this.user.getMention()));
 
             chatView.revalidate();
             SwingUtilities.invokeLater(chatView::scrollDown);
@@ -256,6 +257,8 @@ public class MainViewController implements GatewayEventListener {
 
     @Override
     public void onReady(ServerReadyEvent event) {
+        this.user = event.getUser();
+
         this.guilds.addAll(event.getGuilds());
         this.privateChannels.addAll(event.getChannels());
         this.relationships.addAll(event.getRelationships());

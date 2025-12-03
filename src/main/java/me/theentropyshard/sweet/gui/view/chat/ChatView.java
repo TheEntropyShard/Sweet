@@ -56,8 +56,14 @@ public class ChatView extends JPanel {
         this.messagesPanel.removeAll();
     }
 
-    public void addMessage(MessageComponent component) {
-        this.messagesPanel.add(component, "wmin 200px, wmax 85%");
+    public void addMessage(MessageComponent component, boolean myself) {
+        if (myself) {
+            component.setBackground(UIManager.getColor("myselfMessageColor"));
+
+            this.messagesPanel.add(component, "wmin 200px, wmax 85%, al right");
+        } else {
+            this.messagesPanel.add(component, "wmin 200px, wmax 85%");
+        }
     }
 
     public ChatInput getChatInput() {
