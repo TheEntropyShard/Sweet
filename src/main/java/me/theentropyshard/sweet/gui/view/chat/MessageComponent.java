@@ -24,8 +24,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
 
 public class MessageComponent extends JPanel {
+    private final RoundRectangle2D.Double roundRect = new RoundRectangle2D.Double();
+
     public MessageComponent(String author, String datetime, String text) {
         super(new MigLayout("fill", "[]", "[][]"));
 
@@ -41,13 +44,19 @@ public class MessageComponent extends JPanel {
         this.add(metaInfoPanel, "growx, wrap");
 
         JTextPane pane = new JTextPane() {
+            private final RoundRectangle2D.Double roundRect = new RoundRectangle2D.Double();
+
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+                this.roundRect.width = this.getWidth();
+                this.roundRect.height = this.getHeight();
+                this.roundRect.arcwidth = this.roundRect.archeight = 8;
+
                 g2d.setColor(this.getBackground());
-                g2d.fillRoundRect(0, 0, this.getWidth() - 1, this.getHeight() - 1, 16, 16);
+                g2d.fill(this.roundRect);
 
                 super.paintComponent(g);
             }
@@ -75,8 +84,12 @@ public class MessageComponent extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+        this.roundRect.width = this.getWidth();
+        this.roundRect.height = this.getHeight();
+        this.roundRect.arcwidth = this.roundRect.archeight = 16;
+
         g2d.setColor(this.getBackground());
-        g2d.fillRoundRect(0, 0, this.getWidth() - 1, this.getHeight() - 1, 16, 16);
+        g2d.fill(this.roundRect);
 
         super.paintComponent(g2d);
     }

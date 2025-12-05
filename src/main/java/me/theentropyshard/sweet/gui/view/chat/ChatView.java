@@ -31,7 +31,7 @@ public class ChatView extends JPanel {
 
     public ChatView() {
         this.messagesPanel = new JPanel();
-        this.messagesPanel.setLayout(new MigLayout("insets 0, fillx, flowy"));
+        this.messagesPanel.setLayout(new MigLayout("insets 0 0 0 n, fillx, flowy"));
 
         this.scrollPane = new JScrollPane(
             this.messagesPanel,

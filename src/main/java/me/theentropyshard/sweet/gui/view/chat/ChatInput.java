@@ -26,9 +26,12 @@ import javax.swing.*;
 import javax.swing.text.DefaultEditorKit;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.RoundRectangle2D;
 import java.util.function.Function;
 
 public class ChatInput extends JPanel {
+    private final RoundRectangle2D.Double roundRect = new RoundRectangle2D.Double();
+
     private Listener listener;
 
     public ChatInput() {
@@ -60,13 +63,19 @@ public class ChatInput extends JPanel {
             JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
             JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
         ) {
+            private final RoundRectangle2D.Double roundRect = new RoundRectangle2D.Double();
+
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+                this.roundRect.width = this.getWidth();
+                this.roundRect.height = this.getHeight();
+                this.roundRect.arcwidth = this.roundRect.archeight = 8;
+
                 g2d.setColor(this.getBackground());
-                g2d.fillRoundRect(0, 0, this.getWidth() - 1, this.getHeight() - 1, 16, 16);
+                g2d.fill(this.roundRect);
 
                 super.paintComponent(g);
             }
@@ -148,8 +157,12 @@ public class ChatInput extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+        this.roundRect.width = this.getWidth();
+        this.roundRect.height = this.getHeight();
+        this.roundRect.arcwidth = this.roundRect.archeight = 16;
+
         g2d.setColor(this.getBackground());
-        g2d.fillRoundRect(0, 0, this.getWidth() - 1, this.getHeight() - 1, 16, 16);
+        g2d.fill(this.roundRect);
 
         super.paintComponent(g2d);
     }
